@@ -1,0 +1,9 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'Knead3d',
+      #directory : 'src',
+      #platforms : [ #pharo ]
+    }
+  ]
+}
