@@ -48,7 +48,7 @@ KnTriangulator >> clipEarsFrom: aCollection into: aStream [
 	n2 := self calcNormal2Of: triangle.
 	rest := aCollection copyFrom: 4 to: aCollection size.
 	((self isConvex: triangle)
-		and: [ (n1 closeTo: n2)
+		and: [ (n1 nearTo: n2)
 				and: [ (self triangle: triangle containsAll: rest) not ] ])
 		ifTrue: [ aStream nextPut: triangle.
 			^ self
