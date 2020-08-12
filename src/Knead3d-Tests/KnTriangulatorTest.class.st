@@ -166,7 +166,40 @@ KnTriangulatorTest >> testClipEarsFrom [
 			(self newVecX: 0 y: 0 z: 0)}.
 			{(self newVecX: 1 y: 1 z: 0).
 			(self newVecX: 0 y: 0 z: 0).
-			(self newVecX: 2 y: 1 z: 0)}}
+			(self newVecX: 2 y: 1 z: 0)}}.
+	in := {(self newVecX: 10.0 y: 0.0 z: 0.0).
+	(self
+		newVecX: 13.090169906616211
+		y: 1.8144820046472887e-7
+		z: 9.510563850402832).
+	(self newVecX: 5.0 y: 1.3119467894284753e-6 z: 15.388415336608887).
+	(self
+		newVecX: -3.090169906616211
+		y: 1.8144820046472887e-7
+		z: 9.510563850402832).
+	(self newVecX: 0.0 y: 0.0 z: 0.0)}.
+	out := t clipEarsFrom: in.
+	self
+		assertCollection: out
+		equals:
+			{{(KnVec4 x: 10.0 y: 0.0 z: 0.0).
+			(KnVec4
+				x: 13.090169906616211
+				y: 1.8144820046472887e-7
+				z: 9.510563850402832).
+			(KnVec4 x: 5.0 y: 1.3119467894284753e-6 z: 15.388415336608887)}.
+			{(KnVec4 x: 10.0 y: 0.0 z: 0.0).
+			(KnVec4 x: 5.0 y: 1.3119467894284753e-6 z: 15.388415336608887).
+			(KnVec4
+				x: -3.090169906616211
+				y: 1.8144820046472887e-7
+				z: 9.510563850402832)}.
+			{(KnVec4 x: 10.0 y: 0.0 z: 0.0).
+			(KnVec4
+				x: -3.090169906616211
+				y: 1.8144820046472887e-7
+				z: 9.510563850402832).
+			(KnVec4 x: 0.0 y: 0.0 z: 0.0)}}
 ]
 
 { #category : #test }
