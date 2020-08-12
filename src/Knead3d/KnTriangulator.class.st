@@ -31,14 +31,16 @@ KnTriangulator >> clipEarsFrom: aCollection [
 	| list stream |
 	list := self removeCollinearPoints: aCollection.
 	stream := WriteStream on: Array new.
-	self clipEarsFrom: list into: stream.
+	self clipEarsFrom: list into: stream count: list size.
 	list := self validTriangles: stream contents.
 	^ list
 ]
 
 { #category : #private }
-KnTriangulator >> clipEarsFrom: aCollection into: aStream [
+KnTriangulator >> clipEarsFrom: aCollection into: aStream count: anInteger [
 	| triangle rest n1 n2 |
+	anInteger < 1
+		ifTrue: [ ^ self naiveTrianglesFrom: aCollection into: aStream ].
 	aCollection size < 3
 		ifTrue: [ ^ self ].
 	aCollection size = 3
@@ -48,17 +50,19 @@ KnTriangulator >> clipEarsFrom: aCollection into: aStream [
 	n2 := self calcNormal2Of: triangle.
 	rest := aCollection copyFrom: 4 to: aCollection size.
 	((self isConvex: triangle)
-		and: [ (n1 nearTo: n2)
+		and: [ (n1 - n2) r < 0.01
 				and: [ (self triangle: triangle containsAll: rest) not ] ])
 		ifTrue: [ aStream nextPut: triangle.
 			^ self
 				clipEarsFrom:
 					{aCollection first.
 					aCollection third} , rest
-				into: aStream ].
+				into: aStream
+				count: rest size + 2 ].
 	self
 		clipEarsFrom: (aCollection copyWithoutFirst copyWith: aCollection first)
 		into: aStream
+		count: anInteger - 1
 ]
 
 { #category : #testing }
