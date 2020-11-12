@@ -206,7 +206,7 @@ SpKneadFrame >> initializePresenters [
 	viewerPane := self instantiate: SpScratchListViewer.
 	editorPane := self instantiate: SpScratchEditor.
 	titlePane := self instantiate: SpScratchTitle.
-	libraryPane := self instantiate: SpKneadLibrary.
+	libraryPane := self instantiate: SpScratchLibrary.
 	stageFrame := self instantiate: SpKneadStage.
 	self focusOrder add: editorPane
 ]

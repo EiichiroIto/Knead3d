@@ -74,7 +74,7 @@ KneadProjectTest >> testNeedBuild [
 KneadProjectTest >> testNewObjStream [
 	| p |
 	p := self newProject.
-	self assert: (p newObjStream isKindOf: KneadObjStream)
+	self assert: (p newObjStream isKindOf: STONObjStream)
 ]
 
 { #category : #test }

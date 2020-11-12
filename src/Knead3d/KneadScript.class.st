@@ -3,9 +3,9 @@ Class {
 	#superclass : #ScratchScript,
 	#instVars : [
 		'objName',
-		'varNames',
 		'listVarNames',
-		'evaluator'
+		'evaluator',
+		'vars'
 	],
 	#category : #'Knead3d-Project'
 }
@@ -22,7 +22,7 @@ KneadScript >> addList: aString [
 
 { #category : #variables }
 KneadScript >> addVariable: aString [
-	varNames add: aString
+	vars at: aString asSymbol put: 0
 ]
 
 { #category : #'block specs' }
@@ -112,8 +112,8 @@ KneadScript >> blocks [
 			-
 			('call %S'								s	callSubroutine '')
 			-
-			('stop script'							-	stopThread)
-			('stop all'								-	stopAll)
+			('stop script'							s	doReturn)
+			('stop all'								s	stopAll)
 		'operators'
 			('%n + %n'								r	+ - -)
 			('%n - %n'								r	- - -)
@@ -164,6 +164,14 @@ KneadScript >> builder [
 	^ evaluator builder
 ]
 
+{ #category : #variables }
+KneadScript >> changeVar: aString to: aString2 [
+	| v1 v2 |
+	v1 := (vars at: aString asSymbol ifAbsent: [ 0 ]) asNumberNoError.
+	v2 := aString2 asNumberNoError.
+	vars at: aString asSymbol put: v1 + v2
+]
+
 { #category : #accessing }
 KneadScript >> clearObjects [
 	self evaluator clear
@@ -176,7 +184,18 @@ KneadScript >> deleteList: aString [
 
 { #category : #variables }
 KneadScript >> deleteVariable: aString [
-	varNames remove: aString ifAbsent: [  ]
+	vars removeKey: aString asSymbol ifAbsent: [  ]
+]
+
+{ #category : #evaluation }
+KneadScript >> evaluateFunction: aSymbol withArgs: anArgs [
+	aSymbol = #setVar:to:
+		ifTrue: [ ^ self setVar: anArgs first to: anArgs second ].
+	aSymbol = #changeVar:by:
+		ifTrue: [ ^ self changeVar: anArgs first to: anArgs second ].
+	aSymbol = #getVar:
+		ifTrue: [ ^ self getVar: anArgs first ].
+	^ super evaluateFunction: aSymbol withArgs: anArgs
 ]
 
 { #category : #accessing }
@@ -184,10 +203,15 @@ KneadScript >> evaluator [
 	^ evaluator
 ]
 
+{ #category : #variables }
+KneadScript >> getVar: aString [
+	^ vars at: aString asSymbol
+]
+
 { #category : #initialization }
 KneadScript >> initialize [
 	super initialize.
-	varNames := OrderedCollection new.
+	vars := Dictionary new.
 	listVarNames := OrderedCollection new.
 	evaluator := self newEvaluator
 		builder: self newBuilder;
@@ -234,6 +258,13 @@ KneadScript >> objName: aString [
 	objName := aString
 ]
 
+{ #category : #variables }
+KneadScript >> setVar: aString to: aString2 [ 
+	| v |
+	v := aString2 isNumberString ifTrue: [ aString2 asNumberNoError ] ifFalse: [aString2].
+	vars at: aString asSymbol put: v
+]
+
 { #category : #'block specs' }
 KneadScript >> setupBlockCategory [
 	super setupBlockCategory.
@@ -274,12 +305,12 @@ KneadScript >> useVariableWatcher [
 
 { #category : #'argument menus' }
 KneadScript >> varNames [
-	^ varNames
+	^ vars keys sorted
 ]
 
 { #category : #variables }
 KneadScript >> variableNameInUse: aString [
-	^ (varNames includes: aString) or: [ listVarNames includes: aString ]
+	^ (self varNames includes: aString) or: [ listVarNames includes: aString ]
 ]
 
 { #category : #'block specs' }

@@ -1,5 +1,5 @@
 Class {
-	#name : #SpKneadLibrary,
+	#name : #SpScratchLibrary,
 	#superclass : #SpPresenter,
 	#instVars : [
 		'buttonMain',
@@ -8,11 +8,11 @@ Class {
 		'buttonDelete',
 		'buttonOther'
 	],
-	#category : #'Knead3d-Spec2'
+	#category : #'FromScratch-Spec2'
 }
 
 { #category : #specs }
-SpKneadLibrary class >> defaultSpec [
+SpScratchLibrary class >> defaultSpec [
 	^ SpBoxLayout newHorizontal
 		add: #buttonMain;
 		add: #buttonOther;
@@ -23,17 +23,17 @@ SpKneadLibrary class >> defaultSpec [
 ]
 
 { #category : #private }
-SpKneadLibrary >> defaultMainButtonName [
+SpScratchLibrary >> defaultMainButtonName [
 	^ 'main'
 ]
 
 { #category : #private }
-SpKneadLibrary >> defaultOtherButtonName [
+SpScratchLibrary >> defaultOtherButtonName [
 	^ '(none)'
 ]
 
 { #category : #initialization }
-SpKneadLibrary >> initializePresenters [
+SpScratchLibrary >> initializePresenters [
 	buttonMain := self newButton
 		label: self defaultMainButtonName;
 		icon: (self iconNamed: #page);
@@ -59,53 +59,53 @@ SpKneadLibrary >> initializePresenters [
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> mainLabel [
+SpScratchLibrary >> mainLabel [
 	^ buttonMain label asString
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> otherLabel [
+SpScratchLibrary >> otherLabel [
 	^ buttonOther label asString
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> otherLabel: aString [
+SpScratchLibrary >> otherLabel: aString [
 	buttonOther label: aString
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> reset [
+SpScratchLibrary >> reset [
 	self otherLabel: self defaultOtherButtonName.
 	self selectButton: self defaultMainButtonName
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> selectButton: aString [
+SpScratchLibrary >> selectButton: aString [
 	buttonMain state: (self mainLabel = aString).
 	buttonOther state: (self otherLabel = aString)
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> whenAddButtonPressed: aBlock [
+SpScratchLibrary >> whenAddButtonPressed: aBlock [
 	buttonAdd action: aBlock
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> whenDeleteButtonPressed: aBlock [
+SpScratchLibrary >> whenDeleteButtonPressed: aBlock [
 	buttonDelete action: aBlock
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> whenMainButtonPressed: aBlock [
+SpScratchLibrary >> whenMainButtonPressed: aBlock [
 	buttonMain action: aBlock
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> whenOtherButtonPressed: aBlock [
+SpScratchLibrary >> whenOtherButtonPressed: aBlock [
 	buttonOther action: [ aBlock cull: self otherLabel ]
 ]
 
 { #category : #accessing }
-SpKneadLibrary >> whenSelectButtonPressed: aBlock [
+SpScratchLibrary >> whenSelectButtonPressed: aBlock [
 	buttonSelect action: aBlock
 ]

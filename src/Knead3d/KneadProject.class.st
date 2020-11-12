@@ -63,7 +63,7 @@ KneadProject >> needBuild: aBoolean [
 
 { #category : #private }
 KneadProject >> newObjStream [
-	^ KneadObjStream new
+	^ STONObjStream new
 ]
 
 { #category : #accessing }

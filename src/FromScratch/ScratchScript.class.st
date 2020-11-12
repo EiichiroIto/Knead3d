@@ -801,6 +801,11 @@ ScratchScript >> subBlocks [
 	^ blocksBin submorphs select: [:m | m class = SubHatMorph]
 ]
 
+{ #category : #accessing }
+ScratchScript >> subHatBlockNamed: aString [
+	^ self subBlocks detect: [ :each | each subName = aString ] ifNone: [ nil ]
+]
+
 { #category : #testing }
 ScratchScript >> subNameInUse: aString [
 	^ self subNames includes: aString
