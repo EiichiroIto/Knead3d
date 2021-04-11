@@ -446,6 +446,26 @@ ScratchScript >> convertTuplesToStacks [
 			blocksBin addMorph: stack ]
 ]
 
+{ #category : #private }
+ScratchScript >> countBlockMorph: aMorph [
+	| list |
+	list := aMorph submorphs
+		collect: [ :each | self countBlockMorph: each ].
+	^ (list isEmpty ifTrue: [ 0 ] ifFalse: [ list sum ])
+		+
+			(aMorph isBlockMorph
+				ifTrue: [ 1 ]
+				ifFalse: [ 0 ])
+]
+
+{ #category : #accessing }
+ScratchScript >> countBlockMorphs [
+	| list |
+	list := self hatBlocks collect: [ :each | self countBlockMorph: each ].
+	list isEmpty ifTrue: [ ^ 0 ].
+	^ list sum
+]
+
 { #category : #blocks }
 ScratchScript >> createBlock: block atPosition: pos onPage: page [
 	"Creates a block on the given page. If the block is one that can become a watcher, then a toggle button is created as well."
@@ -775,6 +795,11 @@ ScratchScript >> setupProgram: aProgram events: aDictionary [
 				program: aProgram
 				table: subTable
 				events: aDictionary ].
+]
+
+{ #category : #'block specs' }
+ScratchScript >> specialCommands [
+	^ #(#setVar:to:)
 ]
 
 { #category : #'object i/o' }

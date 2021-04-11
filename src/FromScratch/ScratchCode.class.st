@@ -286,6 +286,11 @@ ScratchCode >> generatePass [
 ]
 
 { #category : #'code generator' }
+ScratchCode >> generateReporter: aString [
+	self subclassResponsibility
+]
+
+{ #category : #'code generator' }
 ScratchCode >> generateReporter: aSymbol morph: aMorph [
 	| ret |
 	self class addCommand: aSymbol.

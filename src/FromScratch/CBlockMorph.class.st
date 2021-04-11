@@ -360,6 +360,14 @@ CBlockMorph >> isCBlock [
 	^ true
 ]
 
+{ #category : #accessing }
+CBlockMorph >> localVars [
+	| list |
+	list := self submorphs
+		select: [ :each | each isKindOf: LocalVarArgMorph ].
+	^ list collect: [ :each | each varName ]
+]
+
 { #category : #'code generation' }
 CBlockMorph >> nestedBlock [
 	^ nestedBlock

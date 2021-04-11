@@ -104,6 +104,23 @@ ScratchStackProcess >> callSubroutine [
 ]
 
 { #category : #'special ops' }
+ScratchStackProcess >> doForever [
+	"Executes one iteration of a forever loop."
+
+	"Right now, the forever special form is at the top of the stack.  We're going to add two more things on top of this:  (1) a frame for evaluating the blocks in the forever block, and (2) a frame that just results in yielding control.  That way we'll evaluate the contents of the block, give up control, and do it all again."
+
+	| blocks |
+	"Remember blocks to evaluate before we clobber the stack."
+	blocks := stackFrame expression firstBlockList.
+
+	"When we're all done with these blocks, we want to yield."
+	self pushStackFrame: (ScratchStackFrame new shouldYield: true).
+
+	"First, we want to evaluate the blocks inside the loop."
+	self pushStackFrame: (ScratchStackFrame new expression: blocks)
+]
+
+{ #category : #'special ops' }
 ScratchStackProcess >> doIf [
 	"Evaluate the current expression (which must be an if)."
 
@@ -151,21 +168,25 @@ ScratchStackProcess >> doIfElse [
 ]
 
 { #category : #'special ops' }
-ScratchStackProcess >> doRepeat [
+ScratchStackProcess >> doIterate [
 	"Handles one iteration of a repeat block."
 
-	| arguments argExp block counter frame |
+	| arguments argExp block counter frame list |
 	block := stackFrame expression.
 	arguments := stackFrame arguments.
 
 	"If we haven't done so yet, evaluate the argument to repeat."
-	arguments size < 1
+	arguments isEmpty
 		ifTrue: [ argExp := block argumentAt: 1.
 			^ self pushStackFrame: (ScratchStackFrame new expression: argExp) ].
 
+	arguments size = 1
+		ifTrue: [ arguments := { 1 }, arguments ].
+
 	"If the number of times to repeat is 0, then we're done."
 	counter := arguments first asNumberNoError.
-	counter <= 0
+	list := arguments second.
+	counter > list size
 		ifTrue: [ ^ self popStackFrame ].
 
 	"Pop this instruction from the stack."
@@ -180,7 +201,62 @@ ScratchStackProcess >> doRepeat [
 	"3.  evaluate repeat block with decremented counter value."
 	frame := ScratchStackFrame new
 		expression: block;
-		addArgument: counter - 1.
+		addArgument: counter + 1;
+		addArgument: list.
+
+	block localVars
+		withIndexDo: [ :each :index | frame localVarAt: each put: (list at: counter) ].
+
+	self pushStackFrame: frame.
+
+	"2.  yield."
+	self pushStackFrame: (ScratchStackFrame new shouldYield: true).
+
+	"1.  evaluate body of repeat block."
+	self
+		pushStackFrame: (ScratchStackFrame new expression: block firstBlockList)
+]
+
+{ #category : #'special ops' }
+ScratchStackProcess >> doRepeat [
+	"Handles one iteration of a repeat block."
+
+	| arguments argExp block counter frame max |
+	block := stackFrame expression.
+	arguments := stackFrame arguments.
+
+	"If we haven't done so yet, evaluate the argument to repeat."
+	arguments isEmpty
+		ifTrue: [ argExp := block argumentAt: 1.
+			^ self pushStackFrame: (ScratchStackFrame new expression: argExp) ].
+
+	arguments size = 1
+		ifTrue: [ arguments := { 0 }, arguments ].
+
+	"If the number of times to repeat is 0, then we're done."
+	counter := arguments first asNumberNoError.
+	max := arguments second asNumberNoError.
+	counter >= max
+		ifTrue: [ ^ self popStackFrame ].
+
+	"Pop this instruction from the stack."
+	self popStackFrameNoUnhightlight.
+
+	"At top of stack should now be:
+		1.  evaluate body of repeat block.
+		2.  yield.
+		3.  evaluate repeat block with decremented counter value.
+	Need to add these to the stack in reverse order."
+
+	"3.  evaluate repeat block with decremented counter value."
+	frame := ScratchStackFrame new
+		expression: block;
+		addArgument: counter + 1;
+		addArgument: max.
+
+	block localVars
+		withIndexDo: [ :each :index | frame localVarAt: each put: counter ].
+
 	self pushStackFrame: frame.
 
 	"2.  yield."
@@ -377,6 +453,11 @@ ScratchStackProcess >> isRunning [
 	"Answer true if I am still running, have not encountered an error, and don't refer to any deleted objects."
 
 	^ stackFrame notNil and: [ errorFlag not ]
+]
+
+{ #category : #api }
+ScratchStackProcess >> localVarAt: aString [
+	^ stackFrame recursiveLocalVarAt: aString
 ]
 
 { #category : #private }

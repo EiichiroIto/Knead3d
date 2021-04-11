@@ -301,8 +301,7 @@ CommandBlockMorph >> coerceArgs: argList [
 
 	| args specialCommands |
 	args := argList asArray.
-	specialCommands := #(#setVar:to:).
-	(specialCommands includes: selector)
+	(self script specialCommands includes: selector)
 		ifFalse: [ "ensure args are numbers where numbers are expected"
 			args := argList asArray
 				with: self numberArgFlags

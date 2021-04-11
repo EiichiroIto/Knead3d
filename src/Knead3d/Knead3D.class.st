@@ -176,6 +176,11 @@ Knead3D >> installNewProject: aProject [
 	presenter updateDisplay
 ]
 
+{ #category : #processes }
+Knead3D >> isProcessRunning [
+	^ runningBlocks notEmpty
+]
+
 { #category : #testing }
 Knead3D >> isRecording [
 	^ recorder notNil

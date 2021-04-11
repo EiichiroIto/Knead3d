@@ -72,6 +72,16 @@ ArgMorphBuilder >> addNumberExpressArg: aCharacter initialExpression: aString [
 ]
 
 { #category : #accessing }
+ArgMorphBuilder >> addNumberExpressArg: aCharacter selector: aSymbol target: anObject [
+	self
+		add: aCharacter
+		builder: [ ExpressionArgMorphWithMenu new
+				numExpression: (anObject perform: aSymbol) first second asString;
+				getOptionsSelector: aSymbol;
+				getOptionsTarget: anObject ]
+]
+
+{ #category : #accessing }
 ArgMorphBuilder >> addNumberExpressArg: aCharacter selector: aSymbol target: anObject initialExpression: aString [
 	self
 		add: aCharacter

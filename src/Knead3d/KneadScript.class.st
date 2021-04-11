@@ -12,7 +12,7 @@ Class {
 
 { #category : #'ston-core' }
 KneadScript class >> stonAllInstVarNames [
-	^ super stonAllInstVarNames , #(objName varNames listVarNames evaluator)
+	^ super stonAllInstVarNames , #(objName vars listVarNames evaluator)
 ]
 
 { #category : #variables }

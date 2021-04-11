@@ -20,3 +20,8 @@ LocalVarBlockMorph >> asBlockTuple [
 LocalVarBlockMorph >> canBecomeWatcher [
 	^ false
 ]
+
+{ #category : #evaluation }
+LocalVarBlockMorph >> evaluateWithArgs: args [
+	^ self topBlock scratchProc localVarAt: commandSpec
+]

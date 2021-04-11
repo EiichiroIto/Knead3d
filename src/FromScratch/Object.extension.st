@@ -22,6 +22,11 @@ Object >> initFieldsNamed: varList from: anObjStream [
 ]
 
 { #category : #'*FromScratch' }
+Object >> isNumberString [
+	^ false
+]
+
+{ #category : #'*FromScratch' }
 Object >> storeFieldsNamed: varList on: anObjStream [
 	"Store the instance variables in the given list on the given object stream."
 
