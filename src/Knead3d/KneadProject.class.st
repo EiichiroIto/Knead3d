@@ -14,6 +14,11 @@ KneadProject class >> appVersionTag [
 	^ 'Knead3DV'
 ]
 
+{ #category : #private }
+KneadProject class >> objStreamClass [
+	^ STONObjStream
+]
+
 { #category : #accessing }
 KneadProject >> addScriptNamed: aString [
 	| script |

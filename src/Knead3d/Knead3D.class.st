@@ -27,7 +27,7 @@ Knead3D class >> extension [
 { #category : #'class initialization' }
 Knead3D class >> initialize [
 	"self initialize"
-	ScratchDirectory current appName: self appFolderName.
+	"ScratchDirectory current appName: self appFolderName."
 	ScratchTheme
 		themesURL: self themesURL;
 		setupThemeNamed: self appFolderName.
@@ -43,6 +43,16 @@ Knead3D class >> menuCommandOn: aBuilder [
 		target: self;
 		action: [self new open]; 
 		icon: self icon
+]
+
+{ #category : #accessing }
+Knead3D class >> previewClass [
+	^ KneadProject
+]
+
+{ #category : #accessing }
+Knead3D class >> projectClass [
+	^ KneadProject
 ]
 
 { #category : #accessing }
@@ -138,11 +148,6 @@ Knead3D >> exportSTL [
 { #category : #'menu actions' }
 Knead3D >> exportSexpCode [
 	self export: (ScratchSexpExporter appName: self appName) extension: self sexpExtension
-]
-
-{ #category : #private }
-Knead3D >> imageExtension [
-	^ 'png'
 ]
 
 { #category : #'menu actions' }
@@ -288,24 +293,31 @@ Knead3D >> restoreProject [
 ]
 
 { #category : #'menu actions' }
+Knead3D >> saveScriptsToImage [
+	"Take a snapshot of all scripts for a sprite and save as a GIF file"
+
+	| file saveForm |
+	saveForm := presenter scriptForm.
+	saveForm ifNil: [ ^ self ].
+	file := UIManager default
+		chooseForSaveFileReference: 'Export ...' localized
+		extensions: {'png'}
+		path: self projectPath.
+	file ifNil: [ ^ self ].
+	saveForm writePNGFileNamed: file pathString
+]
+
+{ #category : #'menu actions' }
 Knead3D >> saveStageAsImage [
-	| fName saveForm pngExt |
-	pngExt := self imageExtension.
+	| file saveForm |
 	saveForm := presenter stageShotExtent: presenter display extent truncated.
 	saveForm ifNil: [ ^ self ].
-	fName := self
-		chooseNewFileDefault: self projectName
-		extension: pngExt
-		title: 'Save Stage Snapshot'
-		type: #scriptsSnapshot.
-	fName ifNil: [ ^ self ].
-	fName := fName withExtension: pngExt.
-	fName isFile
-		ifTrue: [ (UIManager default
-				confirm: 'Overwrite existing ' , fName basename , '?')
-				ifFalse: [ ^ self ].
-			fName delete ].
-	saveForm writePNGFileNamed: fName pathString
+	file := UIManager default
+		chooseForSaveFileReference: 'Export ...' localized
+		extensions: {'png'}
+		path: self projectPath.
+	file ifNil: [ ^ self ].
+	saveForm writePNGFileNamed: file pathString
 ]
 
 { #category : #'menu actions' }

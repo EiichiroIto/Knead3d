@@ -3,7 +3,6 @@ Class {
 	#superclass : #SpPresenter,
 	#instVars : [
 		'viewerPane',
-		'libraryPane',
 		'stageFrame',
 		'titlePane',
 		'editorPane'
@@ -86,11 +85,7 @@ SpScratchFrame >> addScriptMenu: aMenu for: aScript [
 				addItem: [ :item | 
 					item
 						name: 'clean up' localized;
-						action: [ aScript cleanUp ] ];
-				addItem: [ :item | 
-					item
-						name: 'save picture of scripts' localized;
-						action: [ application saveScriptsToImage ] ] ]
+						action: [ aScript cleanUp ] ] ]
 ]
 
 { #category : #accessing }
@@ -116,6 +111,20 @@ SpScratchFrame >> defaultExtent [
 { #category : #private }
 SpScratchFrame >> display [
 	^ stageFrame display
+]
+
+{ #category : #private }
+SpScratchFrame >> examplesMenu [
+	| m |
+	m := self newMenu.
+	application exampleFiles
+		do: [ :each | 
+			m
+				addItem: [ :item | 
+					item
+						name: each basename;
+						action: [ application loadExample: each ] ] ].
+	^ m
 ]
 
 { #category : #private }
@@ -187,17 +196,22 @@ SpScratchFrame >> scriptMenuFor: aScript [
 
 { #category : #private }
 SpScratchFrame >> selectSetting: aSymbol [
-	| list choice appClass |
+	| list choice appClass ret |
 	appClass := self application class.
 	list := appClass optionsFor: aSymbol.
-	list isEmpty
-		ifTrue: [ ^ self ].
-	choice := UIManager default
-		chooseFrom: list
-		title: 'Select options for ' localized , aSymbol.
-	choice = 0
-		ifTrue: [ ^ self ].
-	appClass perform: (aSymbol , ':') asSymbol with: (list at: choice).
+	list = #string
+		ifTrue: [ ret := UIManager default
+				textEntry: 'Enter for ' localized , aSymbol.
+			ret ifNil: [ ^ self ] ]
+		ifFalse: [ list isEmpty
+				ifTrue: [ ^ self ].
+			choice := UIManager default
+				chooseFrom: list
+				title: 'Select an option for ' localized , aSymbol.
+			choice = 0
+				ifTrue: [ ^ self ].
+			ret := list at: choice ].
+	appClass perform: (aSymbol , ':') asSymbol with: ret.
 	aSymbol = #dontClose
 		ifTrue: [ self updateDontCloseSetting ]
 ]
@@ -257,8 +271,7 @@ SpScratchFrame >> target [
 { #category : #accessing }
 SpScratchFrame >> target: aScript [
 	viewerPane target: aScript.
-	editorPane target: aScript.
-	libraryPane selectButton: aScript objName
+	editorPane target: aScript
 ]
 
 { #category : #accessing }

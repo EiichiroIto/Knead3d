@@ -25,6 +25,24 @@ ScratchProject class >> appVersionTag [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+ScratchProject class >> formFromStream: aStream [
+	| version info |
+	version := self objStreamClass fileVersion: self from: aStream.
+	version = self appVersion
+		ifFalse: [ ^ nil ].
+	aStream skip: 4.
+	info := self objStreamClass new
+		readObjFrom: aStream
+		showProgress: false.
+	^ info at: 'thumbnail'
+]
+
+{ #category : #accessing }
+ScratchProject class >> objStreamClass [
+	self subclassResponsibility
+]
+
 { #category : #'ston-core' }
 ScratchProject class >> stonAllInstVarNames [
 	^ #(scripts info)
@@ -161,6 +179,11 @@ ScratchProject >> findObjName: aString [
 	^ self scripts detect: [ :each | each objName = aString ] ifNone: [ nil ]
 ]
 
+{ #category : #accessing }
+ScratchProject >> fixUnsavedFields [
+	scripts do: #fixUnsavedFields
+]
+
 { #category : #'file read/write' }
 ScratchProject >> getScratchInfoFrom: aFileReference [
 	| result f version buf obj |
@@ -225,7 +248,7 @@ ScratchProject >> newCode [
 
 { #category : #private }
 ScratchProject >> newObjStream [
-	self subclassResponsibility
+	^ self class objStreamClass new
 ]
 
 { #category : #'file read/write' }

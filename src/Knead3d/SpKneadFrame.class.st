@@ -6,7 +6,8 @@ Class {
 		'buttonOpen',
 		'buttonSave',
 		'buttonExport',
-		'menu'
+		'menu',
+		'libraryPane'
 	],
 	#category : #'Knead3d-Spec2'
 }
@@ -86,11 +87,15 @@ SpKneadFrame >> exportMenu [
 				action: [ application exportSexpCode ] ];
 		addItem: [ :item | 
 			item
+				name: 'Export Script image' localized;
+				action: [ application saveScriptsToImage ] ];
+		addItem: [ :item | 
+			item
 				name: 'Export STL' localized;
 				action: [ application exportSTL ] ];
 		addItem: [ :item | 
 			item
-				name: 'Export PNG' localized;
+				name: 'Export Model image' localized;
 				action: [ application saveStageAsImage ] ];
 		addItem: [ :item | 
 			item
@@ -104,17 +109,26 @@ SpKneadFrame >> exportMenu [
 
 { #category : #private }
 SpKneadFrame >> fileMenu [
-	^ self newMenu
+	| m |
+	m := self newMenu.
+	m
+		addItem: [ :item | 
+			item
+				name: 'New' localized;
+				action: [ application newProject ] ];
+		addItem: [ :item | 
+			item
+				name: 'Open' localized;
+				action: [ application openProject ] ].
+	application examplesDirectory isDirectory
+		ifTrue: [ m
+				addItem: [ :item | 
+					item
+						name: 'Examples' localized;
+						subMenu: self examplesMenu ] ].
+	m
 		addGroup: [ :grp | 
 			grp
-				addItem: [ :item | 
-					item
-						name: 'New' localized;
-						action: [ application newProject ] ];
-				addItem: [ :item | 
-					item
-						name: 'Open' localized;
-						action: [ application openProject ] ];
 				addItem: [ :item | 
 					item
 						name: 'Project Notes' localized;
@@ -136,16 +150,19 @@ SpKneadFrame >> fileMenu [
 				addItem: [ :item | 
 					item
 						name: 'Export ...' localized;
-						subMenu: self exportMenu ] ];
-		addItem: [ :item | 
-			item
-				name: 'Close' localized;
-				action: [ application close ] ];
-		addItem: [ :item | 
-			item
-				name: 'Quit' localized;
-				action: [ application quit ] ];
-		yourself
+						subMenu: self exportMenu ] ].
+	m
+		addGroup: [ :grp | 
+			grp
+				addItem: [ :item | 
+					item
+						name: 'Close' localized;
+						action: [ application close ] ];
+				addItem: [ :item | 
+					item
+						name: 'Quit' localized;
+						action: [ application quit ] ] ].
+	^ m
 ]
 
 { #category : #private }
@@ -258,6 +275,12 @@ SpKneadFrame >> stageFrame [
 { #category : #accessing }
 SpKneadFrame >> status: aString [ 
 	editorPane status: aString
+]
+
+{ #category : #accessing }
+SpKneadFrame >> target: aScript [
+	super target: aScript.
+	libraryPane selectButton: aScript objName
 ]
 
 { #category : #api }
